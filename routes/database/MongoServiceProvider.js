@@ -51,6 +51,7 @@ output.saveOptionValues = function(optionValues){
 		}	
 	});
 
+
 	//Saving model to MongoDB
 	OptionModel.save(function(error){
 
@@ -62,6 +63,8 @@ output.saveOptionValues = function(optionValues){
 
 			console.log("Option Values are saved to database successfully");	
 		}
+		//closing mongodb connection
+		Models.closeMongoDB();
 		
 	});
 

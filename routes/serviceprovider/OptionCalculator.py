@@ -118,17 +118,23 @@ def calculateGreeks(type,spot_price,strike,current_date,expiry_date,volatility) 
 	t = days_between_in_years(current_date, expiry_date)
  
 	r = INTEREST_RATE
-	sigma = float(volatility)
+	sigma = round(volatility,4)
+
+	#print "volatility "+str(volatility)
 
 	# calculate option greeks
 	optionGreek = {}
-	optionGreek["delta"] = round(analytical.delta(flag, S, K, t, r, sigma),4)
-	optionGreek["gamma"] = round(analytical.gamma(flag, S, K, t, r, sigma),4)
-	optionGreek["rho"]  = round(analytical.rho(flag, S, K, t, r, sigma),4)
-	optionGreek["theta"] = round(analytical.theta(flag, S, K, t, r, sigma),4)
-	optionGreek["vega"] = round(analytical.vega(flag, S, K, t, r, sigma),4)
-
+	try:
+		optionGreek["delta"] = round(analytical.delta(flag, S, K, t, r, sigma),4)
+		optionGreek["gamma"] = round(analytical.gamma(flag, S, K, t, r, sigma),4)
+		optionGreek["rho"]  = round(analytical.rho(flag, S, K, t, r, sigma),4)
+		optionGreek["theta"] = round(analytical.theta(flag, S, K, t, r, sigma),4)
+		optionGreek["vega"] = round(analytical.vega(flag, S, K, t, r, sigma),4)
+	except Exception as e:
+		pass
+	
 	return optionGreek
+
 
 
 # Executing the main method

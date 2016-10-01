@@ -2,8 +2,9 @@
 
 var moment = require('moment');
 var cp = require('child_process')
+var path = require('path')
 //Importing the database service provider
-var MongoServiceProvider = require('/../database/MongoServiceProvider.js');
+var MongoServiceProvider = require('./../database/MongoServiceProvider.js');
 
 var output = {};
 
@@ -167,9 +168,18 @@ output.processOptionValues = function(scrip,spot_price,expiry,cur_date,strike,ty
 	// Building string to pass to python option calculator
 	var string_to_pass = '{"type" : "'+tmpOptionValues["type"]+'","spot_price" : '+ tmpOptionValues["spot_price"] +',"strike" : '+tmpOptionValues["strike"]+',"current_date" : "'+tmpOptionValues["date"]+'","expiry_date" : "'+tmpOptionValues["expiry"]+'","current_option_price" : '+tmpOptionValues["current_option_price"]+'}\n';
 
+	console.log("Inside processOptionValues")
+
+	var filepath = path.join(__dirname,"/OptionCalculator.py");
+
+	var cmd = "python "+filepath;
+
+	console.log("cmd "+cmd);
+
+	console.log("string_to_pass "+string_to_pass)
 
 	//code for python script to return
-	var child = cp.exec('python OptionCalculator.py',function(error, stdout, stderr){
+	var child = cp.exec(cmd,function(error, stdout, stderr){
 
 		if(error){
 
@@ -185,8 +195,8 @@ output.processOptionValues = function(scrip,spot_price,expiry,cur_date,strike,ty
 		tmpOptionValues["theta"] = output['greeks']['theta'];
 		tmpOptionValues["vega"] = output['greeks']['vega'];
 
-		//console.log(JSON.stringify(tmpOptionValues,null,4));
-		MongoServiceProvider.saveOptionValues(tmpOptionValues)
+		console.log(JSON.stringify(tmpOptionValues,null,4));
+		//MongoServiceProvider.saveOptionValues(tmpOptionValues)
 
 	});
 
@@ -195,12 +205,18 @@ output.processOptionValues = function(scrip,spot_price,expiry,cur_date,strike,ty
 	//child.stdout.pipe(process.stdout);
 	child.stdin.write(string_to_pass);
 
+	child.stdin.on("error", function (e)
+	{
+	    console.log("STDIN ON ERROR");
+	    console.log(e);
+	});
+
 };
 
-output.processOptionValues("BHEL",144.35,"2016-10-06","2016-09-27",150.00,"CE",995000,1445000,365000,4.30);
+//output.processOptionValues("ITC",344.35,"2016-10-06","2016-09-28",350.00,"CE",995000,1445000,365000,4.30);
 
 //MongoServiceProvider.saveOptionValues(tmp)
 
 
-
+module.exports = output; 
 

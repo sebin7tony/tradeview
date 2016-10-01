@@ -35,9 +35,19 @@ process.on('SIGINT', function() {
   }); 
 }); 
 
+var closeMongoDB = function(){
+
+	mongoose.connection.close(function () { 
+    console.log('Mongoose default connection disconnected'); 
+    process.exit(0); 
+  });
+}
+
+
 
 //define the models
 var OptionHolder = mongoose.model('OptionHolder',Options.optionSchema);
 
 
 module.exports.OptionHolder = OptionHolder; 
+module.exports.closeMongoDB = closeMongoDB; 

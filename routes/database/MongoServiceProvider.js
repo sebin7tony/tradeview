@@ -64,7 +64,7 @@ output.saveOptionValues = function(optionValues){
 			console.log("Option Values are saved to database successfully");	
 		}
 		//closing mongodb connection
-		Models.closeMongoDB();
+		//Models.closeMongoDB();
 		
 	});
 

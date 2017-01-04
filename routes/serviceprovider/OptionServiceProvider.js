@@ -83,12 +83,13 @@ output.processOptionValues = function(scrip,spot_price,expiry,cur_date,strike,ty
 		console.log("Unexpected parametes");
 	}
 
-	if(spot_price !== undefined ){
+	if(spot_price !== undefined && isNaN(spot_price) === false ){
 
 		tmpOptionValues["spot_price"] = spot_price; 
 	}
 	else{
 
+		tmpOptionValues["spot_price"] = undefined; 
 		console.log("Unexpected parametes strike");
 	}
 
@@ -131,7 +132,7 @@ output.processOptionValues = function(scrip,spot_price,expiry,cur_date,strike,ty
 
 	if(volume !== undefined ){
 
-		tmpOptionValues["volume"] = volume; 
+		tmpOptionValues["volume"] = volume;
 	}
 	else{
 
@@ -188,15 +189,40 @@ output.processOptionValues = function(scrip,spot_price,expiry,cur_date,strike,ty
 		
 		var output = JSON.parse(stdout);
 
-		tmpOptionValues["iv"] = output['iv'];
-		tmpOptionValues["delta"] = output['greeks']['delta'];	
-		tmpOptionValues["gamma"] = output['greeks']['gamma'];
-		tmpOptionValues["rho"] = output['greeks']['rho'];
-		tmpOptionValues["theta"] = output['greeks']['theta'];
-		tmpOptionValues["vega"] = output['greeks']['vega'];
+		//mapping the iv
+		if(output['iv'] === undefined){
 
-		console.log(JSON.stringify(tmpOptionValues,null,4));
-		//MongoServiceProvider.saveOptionValues(tmpOptionValues)
+			tmpOptionValues["iv"] = undefined;
+		}
+		else{
+
+			tmpOptionValues["iv"] = output['iv'];
+		}
+
+		//mapping the greeks calculated
+		if(output['greeks'] === undefined){
+
+			tmpOptionValues["delta"] = undefined;	
+			tmpOptionValues["gamma"] = undefined;
+			tmpOptionValues["rho"] = undefined;
+			tmpOptionValues["theta"] = undefined;
+			tmpOptionValues["vega"] = undefined;
+		}
+		else{
+
+			tmpOptionValues["delta"] = output['greeks']['delta'];	
+			tmpOptionValues["gamma"] = output['greeks']['gamma'];
+			tmpOptionValues["rho"] = output['greeks']['rho'];
+			tmpOptionValues["theta"] = output['greeks']['theta'];
+			tmpOptionValues["vega"] = output['greeks']['vega'];
+
+		}
+
+
+		
+		
+		//console.log(JSON.stringify(tmpOptionValues,null,4));
+		MongoServiceProvider.saveOptionValues(tmpOptionValues)
 
 	});
 

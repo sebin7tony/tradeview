@@ -124,6 +124,9 @@ def calculateGreeks(type,spot_price,strike,current_date,expiry_date,volatility) 
 
 	# calculate option greeks
 	optionGreek = {}
+
+	#print "sigma "+str(sigma)
+	
 	try:
 		optionGreek["delta"] = round(analytical.delta(flag, S, K, t, r, sigma),4)
 		optionGreek["gamma"] = round(analytical.gamma(flag, S, K, t, r, sigma),4)
@@ -131,7 +134,10 @@ def calculateGreeks(type,spot_price,strike,current_date,expiry_date,volatility) 
 		optionGreek["theta"] = round(analytical.theta(flag, S, K, t, r, sigma),4)
 		optionGreek["vega"] = round(analytical.vega(flag, S, K, t, r, sigma),4)
 	except Exception as e:
+		#print e;
+		#print str(current_date) + " : "+ str(expiry_date) + " : volatility " +str(volatility)
 		pass
+
 	
 	return optionGreek
 
@@ -159,10 +165,30 @@ if __name__ == "__main__":
 
 	#print "INPUT recieved in python : "+inputString
 	# Convert the string json to python dict
-	inputJson = json.loads(inputString)
+	# Returns a empty array back if there is a invalid json comes
+	try:
+		inputJson = json.loads(inputString);
+	except Exception as e:
+		print '{}';
+		quit();
+
+
+	# Checking all the keys are defined before calculating the greeks and iv
+	# returns a empty array if any of the keys are undefined
+	if 'current_option_price' not in inputJson or 'spot_price' not in inputJson or 'strike' not in inputJson or 'current_date' not in inputJson or 'expiry_date' not in inputJson or 'type' not in inputJson:
+		print '{}';
+		quit();
+
 
 	iv = calculateImpliedVolatility(inputJson['current_option_price'],inputJson['spot_price'],
 		inputJson['strike'],inputJson['current_date'],inputJson['expiry_date'],inputJson['type']);
+
+	# Checking whether the implied volatility is in between 0 and 1
+	# if it is not in the expected range then we cannot calculate the greeks 
+	# as expected. So returning a empty json.
+	if iv > 1 or iv < 0 :
+		print '{}';
+		quit();
 
 
 	greeks = calculateGreeks(inputJson['type'],inputJson['spot_price'],inputJson['strike'],inputJson['current_date'],

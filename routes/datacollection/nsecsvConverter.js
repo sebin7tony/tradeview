@@ -7,9 +7,10 @@ var OptionService = require("./../serviceprovider/OptionServiceProvider");
 
 //CSV File Path or CSV String or Readable Stream Object
 var csvFileName="./../../data/OPTSTK_SBIN_CE-250_03-07-2016_TO_30-09-2016.csv";
+//var csvFileName="./../../data/test.csv";
 
 //new converter instance
-var csvConverter=new Converter({});
+var csvConverter = new Converter({});
 
 //end_parsed will be emitted once parsing finished
 csvConverter.on("end_parsed",function(jsonObj){
@@ -19,7 +20,7 @@ csvConverter.on("end_parsed",function(jsonObj){
 
     	OptionService.processOptionValues(jsonObj[i]["Symbol"],jsonObj[i]["Underlying Value"],moment(jsonObj[i]["Expiry"],"DD-MMM-YYYY").format('YYYY-MM-DD')
     		,moment(jsonObj[i]["Date"],"DD-MMM-YYYY").format('YYYY-MM-DD'),jsonObj[i]["Strike Price"],jsonObj[i]["Option Type"]
-    		,jsonObj[i]["No"][" of contracts"],jsonObj[i]["Open Int"],jsonObj[i]["Change in OI"],jsonObj[i]["Close"]);
+    		,jsonObj[i]["No"][" of contracts"],jsonObj[i]["Open Int"],jsonObj[i]["Change in OI"],jsonObj[i]["Settle Price"]);
     }
     
 
